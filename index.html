@@ -3,23 +3,26 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-  <title>ELIMINATOR</title>
+  <title>ETHORION</title>
   <style>
     :root{
       --bg:#0f1115;
       --fg:#e9edf5;
       --muted:#a8b0bd;
-      --line:rgba(255,255,255,0.10);
-      --soft:rgba(255,255,255,0.06);
+
       --panel:#141823;
       --panel2:#101421;
-      --chip:#0b0d12;
+
+      --line:rgba(255,255,255,0.10);
+      --soft:rgba(255,255,255,0.06);
+
+      --chip:rgba(0,0,0,0.18);
 
       --accent1:#f2f2f2;
       --accent2:#aeb7c7;
 
-      --shadow:0 18px 55px rgba(0,0,0,0.55);
-      --r:18px;
+      --shadow:0 18px 60px rgba(0,0,0,0.58);
+      --r:22px;
     }
 
     *{ box-sizing:border-box; }
@@ -32,266 +35,197 @@
       overflow-x:hidden;
     }
 
-    /* Layout */
-    .app{
-      min-height:100%;
+    /* ====== App Shell ====== */
+    .shell{
+      min-height:100vh;
       display:grid;
-      grid-template-columns: 78px 1fr 420px; /* rail | focus | panel */
+      grid-template-rows: auto 1fr auto;
     }
 
-    @media (max-width: 980px){
-      .app{ grid-template-columns: 1fr; }
-    }
-
-    /* Rail */
-    .rail{
-      position:sticky;
-      top:0;
-      height:100vh;
-      padding:10px;
-      border-right:1px solid rgba(255,255,255,0.06);
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    /* Top minimal bar */
+    .topbar{
       display:flex;
-      flex-direction:column;
-      gap:8px;
-      z-index:30;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px 14px;
+      gap:10px;
     }
-    .rail.hidden{ display:none; }
 
-    .rail .btn{
-      border:1px solid rgba(255,255,255,0.08);
+    .topbar .left, .topbar .right{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+
+    .iconbtn{
+      border:1px solid var(--line);
       background: transparent;
       color: var(--fg);
       border-radius: 14px;
-      padding:10px 8px;
+      padding: 10px 12px;
       cursor:pointer;
-      font-weight: 950;
-      font-size: 12px;
+      font-weight: 900;
       letter-spacing:0.06em;
       text-transform: uppercase;
-    }
-    .rail .btn:hover{ border-color: rgba(242,242,242,0.18); }
-    .rail .btn:active{ transform: translateY(1px); }
-
-    .rail .spacer{ flex:1; }
-    .rail .tiny{
-      color: var(--muted);
-      font-size: 11px;
-      text-align:center;
-      line-height:1.15;
-      padding:6px 2px;
-      user-select:none;
-    }
-
-    @media (max-width:980px){ .rail{ display:none; } }
-
-    /* Mobile bottom bar */
-    .mbar{ display:none; }
-    @media (max-width: 980px){
-      .mbar{
-        display:flex;
-        position:fixed;
-        left:10px; right:10px; bottom:10px;
-        gap:10px;
-        z-index:60;
-      }
-      .mbar .mbtn{
-        flex:1;
-        border:1px solid rgba(255,255,255,0.10);
-        background: rgba(0,0,0,0.22);
-        backdrop-filter: blur(10px);
-        color: var(--fg);
-        border-radius: 16px;
-        padding:12px 10px;
-        font-weight: 980;
-        letter-spacing:0.10em;
-        text-transform: uppercase;
-        font-size: 12px;
-        cursor:pointer;
-      }
-      .mbar .mbtn:active{ transform: translateY(1px); }
-    }
-
-    /* Focus column */
-    .focus{
-      padding: 16px;
-      display:grid;
-      gap: 14px;
-      align-content:start;
-    }
-    @media (max-width: 980px){
-      .focus{ padding-bottom: 92px; }
-    }
-
-    .hero{
-      border:1px solid rgba(242,242,242,0.10);
-      border-radius: 22px;
-      background:
-        radial-gradient(900px 320px at 30% 10%, rgba(242,242,242,0.18), transparent 60%),
-        linear-gradient(180deg, var(--panel), var(--panel2));
-      box-shadow: var(--shadow);
-      padding: 16px;
-      display:grid;
-      gap: 12px;
-    }
-
-    .brand h1{
-      margin:0;
-      font-size: 34px;
-      font-weight: 1000;
-      letter-spacing:0.12em;
-      text-transform: uppercase;
-      line-height:1;
-    }
-    .brand p{
-      margin:6px 0 0 0;
-      color: var(--muted);
       font-size: 12px;
-      letter-spacing:0.08em;
     }
+    .iconbtn:hover{ border-color: rgba(242,242,242,0.22); }
+    .iconbtn:active{ transform: translateY(1px); }
+    .iconbtn:disabled{ opacity:0.5; cursor:not-allowed; }
 
-    .rowTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .chipRow{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
+    /* Chips */
+    .chips{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
     .chip{
       display:inline-flex;
       gap:6px;
       align-items:center;
       padding:6px 10px;
       border-radius: 999px;
-      border:1px solid rgba(255,255,255,0.10);
-      background: rgba(0,0,0,0.14);
+      border:1px solid var(--line);
+      background: var(--chip);
       color: var(--muted);
       font-size: 12px;
       font-weight: 900;
-      white-space:nowrap;
       user-select:none;
+      white-space:nowrap;
     }
-    .chip b{ color: var(--fg); font-weight: 980; }
+    .chip b{ color: var(--fg); font-weight: 1000; }
 
-    /* Global bar (full -> decreases) */
-    .gbarWrap{
+    /* ====== Focus Center ====== */
+    .stage{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px 18px;
+    }
+
+    .focusCard{
+      width: min(900px, 96vw);
+      border-radius: var(--r);
+      border: 1px solid rgba(242,242,242,0.10);
+      background:
+        radial-gradient(900px 420px at 50% 0%, rgba(242,242,242,0.16), transparent 62%),
+        linear-gradient(180deg, var(--panel), var(--panel2));
+      box-shadow: var(--shadow);
+      padding: 18px;
+      display:grid;
+      gap: 14px;
+    }
+
+    .brand{
+      text-align:center;
+      display:grid;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .brand h1{
+      margin:0;
+      font-size: clamp(28px, 4.8vw, 44px);
+      font-weight: 1000;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      line-height:1;
+    }
+    .brand p{
+      margin:0;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing:0.12em;
+      text-transform: uppercase;
+    }
+
+    /* Big global bar (full -> decreases) */
+    .barWrap{
       border-radius: 999px;
-      height: 28px;
+      height: 30px;
       background: rgba(255,255,255,0.06);
       overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.10);
       position:relative;
-      border: 1px solid rgba(255,255,255,0.08);
     }
-    .gbarFill{
+    .barFill{
       height:100%;
       width:100%;
       background: linear-gradient(90deg, var(--accent1), var(--accent2));
-      transition: width 240ms ease;
+      transition: width 220ms ease;
     }
-    .gbarLabel{
+    .barLabel{
       position:absolute;
       inset:0;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:12px;
+      font-size: 12px;
       font-weight: 1000;
-      letter-spacing:0.14em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: rgba(10,12,16,0.92);
       mix-blend-mode: screen;
       user-select:none;
     }
 
-    .current{
+    /* Focus task area */
+    .target{
       display:grid;
-      gap:10px;
-      margin-top: 4px;
+      gap: 10px;
+      text-align:center;
+      align-items:center;
     }
-
-    .taskTitle{
-      font-size: 22px;
+    .targetTitle{
+      font-size: clamp(18px, 3.2vw, 26px);
       font-weight: 980;
-      line-height: 1.15;
+      line-height:1.15;
       word-break: break-word;
+      padding: 0 6px;
     }
-    .taskMeta{
+    .targetMeta{
       color: var(--muted);
       font-size: 12px;
-      letter-spacing:0.02em;
-      line-height: 1.2;
+      letter-spacing:0.04em;
+      line-height:1.2;
     }
 
     /* Small task bar */
-    .tbarWrap{
+    .sbarWrap{
       border-radius: 999px;
       height: 14px;
       background: rgba(255,255,255,0.06);
       overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.10);
       position:relative;
-      border: 1px solid rgba(255,255,255,0.08);
     }
-    .tbarFill{
+    .sbarFill{
       height:100%;
       width:100%;
       background: linear-gradient(90deg, rgba(242,242,242,0.85), rgba(174,183,199,0.70));
       transition: width 180ms ease;
     }
-    .tbarLabel{
+    .sbarLabel{
       position:absolute;
       inset:0;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:11px;
-      font-weight: 980;
+      font-size: 11px;
+      font-weight: 1000;
       color: rgba(10,12,16,0.90);
       mix-blend-mode: screen;
       user-select:none;
     }
 
-    /* Main actions */
-    .actionsMain{
+    /* Buttons */
+    .actions{
       display:flex;
-      gap:12px;
-      align-items:center;
       justify-content:center;
+      align-items:center;
+      gap: 14px;
       flex-wrap:wrap;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
-    .btnDego{
-      border:1px solid rgba(242,242,242,0.14);
-      background:
-        radial-gradient(900px 260px at 30% 20%, rgba(242,242,242,0.16), transparent 60%),
-        linear-gradient(180deg, #0b0d12, #0a0c10);
-      color:var(--fg);
-      border-radius: 18px;
-      padding: 14px 18px;
-      cursor:pointer;
-      font-weight: 1000;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      min-height: 56px;
-      min-width: 220px;
-    }
-    .btnDego:hover{ border-color: rgba(242,242,242,0.28); }
-    .btnDego:active{ transform: translateY(1px); }
-    .btnDego:disabled{ opacity:0.5; cursor:not-allowed; }
-
-    /* Circular roulette */
     .btnRoulette{
-      width: 78px;
-      height: 78px;
+      width: 86px;
+      height: 86px;
       border-radius: 999px;
-      border:1px solid rgba(242,242,242,0.18);
+      border:1px solid rgba(242,242,242,0.20);
       background:
         radial-gradient(closest-side, rgba(242,242,242,0.20), rgba(0,0,0,0.05)),
         linear-gradient(180deg, #0b0d12, #0a0c10);
@@ -304,85 +238,159 @@
       place-items:center;
       user-select:none;
       position:relative;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.45);
     }
-    .btnRoulette:hover{ border-color: rgba(242,242,242,0.32); }
+    .btnRoulette .ring{
+      position:absolute; inset:10px;
+      border-radius: 999px;
+      border:1px dashed rgba(255,255,255,0.18);
+      opacity:0.72;
+    }
+    .btnRoulette:hover{ border-color: rgba(242,242,242,0.36); }
     .btnRoulette:active{ transform: translateY(1px); }
     .btnRoulette:disabled{ opacity:0.5; cursor:not-allowed; }
 
-    .btnRoulette .ring{
-      position:absolute;
-      inset:8px;
-      border-radius: 999px;
-      border:1px dashed rgba(255,255,255,0.16);
-      opacity:0.7;
+    .btnRoulette.spinning .ring{ animation: spin 600ms linear infinite; }
+    @keyframes spin{ from{ transform: rotate(0deg);} to{ transform: rotate(360deg);} }
+
+    .btnDego{
+      border:1px solid rgba(242,242,242,0.16);
+      background:
+        radial-gradient(900px 260px at 30% 20%, rgba(242,242,242,0.14), transparent 60%),
+        linear-gradient(180deg, #0b0d12, #0a0c10);
+      color:var(--fg);
+      border-radius: 18px;
+      padding: 14px 18px;
+      cursor:pointer;
+      font-weight: 1000;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      min-height: 58px;
+      min-width: min(520px, 80vw);
     }
-    .btnRoulette.spinning{
-      animation: pop 120ms ease 1;
-    }
-    .btnRoulette.spinning .ring{
-      animation: spin 550ms linear infinite;
-    }
-    @keyframes spin{
-      from{ transform: rotate(0deg); }
-      to{ transform: rotate(360deg); }
-    }
-    @keyframes pop{
-      from{ transform: scale(1); }
-      to{ transform: scale(1.02); }
+    .btnDego:hover{ border-color: rgba(242,242,242,0.30); }
+    .btnDego:active{ transform: translateY(1px); }
+    .btnDego:disabled{ opacity:0.5; cursor:not-allowed; }
+
+    .subActions{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
+    /* Footer hint */
     .hint{
+      text-align:center;
       color: var(--muted);
       font-size: 12px;
       line-height:1.25;
+      padding: 10px 14px 18px;
+      opacity:0.95;
     }
 
-    /* Side panel (desktop) */
-    .side{
-      padding: 16px 16px 16px 0;
-      border-left:1px solid rgba(255,255,255,0.06);
+    /* ====== Drawer (single menu for everything) ====== */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,0.56);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity 160ms ease;
+      z-index: 90;
+    }
+    .overlay.show{ opacity:1; pointer-events:auto; }
+
+    .drawer{
+      position:fixed;
+      top:0; left:0;
+      height:100vh;
+      width: min(560px, 92vw);
+      background:
+        radial-gradient(900px 420px at 40% 0%, rgba(242,242,242,0.14), transparent 62%),
+        linear-gradient(180deg, var(--panel), var(--panel2));
+      border-right: 1px solid rgba(255,255,255,0.10);
+      transform: translateX(-110%);
+      transition: transform 180ms ease;
+      z-index: 100;
       display:grid;
-      gap:12px;
-      align-content:start;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      grid-template-rows: auto auto 1fr auto;
+      gap: 12px;
+      padding: 14px;
+      box-shadow: var(--shadow);
     }
-    .side.hidden{ display:none; }
+    .drawer.show{ transform: translateX(0); }
 
-    @media (max-width: 980px){
-      .side{ display:none; }
+    .drawerHeader{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .drawerHeader .h{
+      font-weight: 1000;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .tab{
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.14);
+      color: var(--fg);
+      border-radius: 999px;
+      padding: 8px 10px;
+      cursor:pointer;
+      font-weight: 950;
+      font-size: 12px;
+      letter-spacing:0.08em;
+      text-transform: uppercase;
+    }
+    .tab.active{ border-color: rgba(242,242,242,0.24); }
+    .tab:active{ transform: translateY(1px); }
+
+    .drawerBody{
+      overflow:auto;
+      padding-right: 4px;
+      display:grid;
+      gap: 12px;
+      align-content:start;
     }
 
     .card{
       border:1px solid rgba(255,255,255,0.08);
       border-radius: 18px;
-      background: rgba(0,0,0,0.12);
+      background: rgba(0,0,0,0.10);
       padding: 12px;
       display:grid;
       gap:10px;
     }
     .cardTitle{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
       color: var(--muted);
       font-weight: 1000;
       letter-spacing:0.14em;
       text-transform: uppercase;
       font-size: 11px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
     }
 
-    textarea, select, input[type="text"], input[type="number"]{
+    textarea, select, input[type="text"]{
       font:inherit;
       border:1px solid rgba(255,255,255,0.10);
-      background: var(--chip);
+      background: rgba(0,0,0,0.18);
       color: var(--fg);
       border-radius: 14px;
       padding: 10px 12px;
       outline:none;
       font-size:13px;
     }
-    textarea{ width:100%; min-height: 90px; resize: vertical; line-height:1.35; }
+    textarea{ width:100%; min-height: 140px; resize: vertical; line-height:1.35; }
     textarea:focus, select:focus, input:focus{ border-color: rgba(242,242,242,0.22); }
 
     .rowBtns{
@@ -391,7 +399,7 @@
       justify-content:flex-end;
       flex-wrap:wrap;
     }
-    .ibtn{
+    .btn{
       border:1px solid rgba(255,255,255,0.10);
       background: transparent;
       color: var(--fg);
@@ -404,33 +412,12 @@
       text-transform: uppercase;
       white-space:nowrap;
     }
-    .ibtn:hover{ border-color: rgba(242,242,242,0.18); }
-    .ibtn:active{ transform: translateY(1px); }
+    .btn:hover{ border-color: rgba(242,242,242,0.18); }
+    .btn:active{ transform: translateY(1px); }
 
-    details{
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius: 18px;
-      overflow:hidden;
-      background: rgba(0,0,0,0.10);
-    }
-    summary{
-      cursor:pointer;
-      padding: 10px 12px;
-      color: var(--muted);
-      font-weight: 1000;
-      letter-spacing:0.14em;
-      text-transform: uppercase;
-      font-size: 11px;
-      user-select:none;
-    }
-    details > .inside{
-      padding: 10px 12px 12px;
-      display:grid;
-      gap:10px;
-    }
-
-    /* Task rows */
+    /* Lists */
     .list{ display:grid; gap:8px; }
+
     .trow{
       border:1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
@@ -439,6 +426,7 @@
       display:grid;
       gap:8px;
     }
+
     .trowTop{
       display:flex;
       justify-content:space-between;
@@ -467,75 +455,49 @@
       justify-content:flex-end;
       align-items:center;
     }
-
     .done{ text-decoration: line-through; opacity:0.55; }
 
-    /* Mobile drawer */
-    .overlay{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,0.52);
-      opacity:0;
-      pointer-events:none;
-      transition: opacity 160ms ease;
-      z-index:70;
+    .sbarMiniWrap{
+      border-radius: 999px;
+      height: 12px;
+      background: rgba(255,255,255,0.06);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.10);
+      position:relative;
     }
-    .overlay.show{
-      opacity:1;
-      pointer-events:auto;
+    .sbarMiniFill{
+      height:100%;
+      background: linear-gradient(90deg, rgba(242,242,242,0.78), rgba(174,183,199,0.62));
+      transition: width 180ms ease;
     }
-    .drawer{
-      position:fixed;
-      right:0; top:0;
-      height:100vh;
-      width: min(560px, 94vw);
-      background:
-        radial-gradient(900px 320px at 30% 10%, rgba(242,242,242,0.12), transparent 60%),
-        linear-gradient(180deg, var(--panel), var(--panel2));
-      border-left:1px solid rgba(255,255,255,0.10);
-      transform: translateX(110%);
-      transition: transform 180ms ease;
-      z-index:80;
-      padding: 14px;
-      display:grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 12px;
-      box-shadow: var(--shadow);
+
+    details{
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      overflow:hidden;
+      background: rgba(0,0,0,0.10);
     }
-    .drawer.show{ transform: translateX(0); }
-    .drawerHeader{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-    .drawerHeader .h{
+    summary{
+      cursor:pointer;
+      padding: 10px 12px;
+      color: var(--muted);
       font-weight: 1000;
       letter-spacing:0.14em;
       text-transform: uppercase;
-      font-size: 12px;
-      color: var(--muted);
+      font-size: 11px;
+      user-select:none;
     }
-    .drawerBody{
-      overflow:auto;
-      padding-right:4px;
+    details > .inside{
+      padding: 10px 12px 12px;
       display:grid;
-      gap: 12px;
-      align-content:start;
-    }
-    .drawerFooter{
-      display:flex;
       gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:center;
     }
 
     /* Toast + FX */
     .toast{
       position:fixed;
       left:50%;
-      bottom: 88px;
+      bottom: 14px;
       transform: translateX(-50%);
       background: rgba(11,13,18,0.92);
       border:1px solid rgba(255,255,255,0.10);
@@ -549,7 +511,7 @@
       max-width: min(900px, calc(100vw - 24px));
       box-shadow: var(--shadow);
       white-space:pre-wrap;
-      z-index:90;
+      z-index: 120;
       backdrop-filter: blur(10px);
     }
     .toast.show{
@@ -561,15 +523,13 @@
       position:fixed;
       inset:0;
       pointer-events:none;
-      z-index:85;
+      z-index: 110;
     }
 
-    /* Small toggles on desktop focus */
-    .topToggles{
-      display:flex;
-      gap:10px;
-      justify-content:flex-end;
-      flex-wrap:wrap;
+    /* Responsive tweaks */
+    @media (max-width: 520px){
+      .btnDego{ min-width: 92vw; }
+      .focusCard{ padding: 16px; }
     }
   </style>
 </head>
@@ -577,66 +537,51 @@
 <body>
   <canvas id="fx"></canvas>
 
-  <!-- Desktop rail -->
-  <aside class="rail" id="rail" aria-label="Navigation">
-    <button class="btn" id="navInbox">Inbox</button>
-    <button class="btn" id="navList">Liste</button>
-    <button class="btn" id="navCats">Cat</button>
-    <button class="btn" id="navSets">Sets</button>
-    <button class="btn" id="navEnergy">Énergie</button>
-    <button class="btn" id="navHistory">Hist</button>
-    <button class="btn" id="navReport">Rapport</button>
-    <div class="spacer"></div>
-    <button class="btn" id="navUndo">Undo</button>
-    <button class="btn" id="navRedo">Redo</button>
-    <div class="tiny" id="dayLabel">Jour</div>
-  </aside>
-
-  <div class="app" id="app">
-    <main class="focus" aria-label="Focus">
-      <div class="topToggles">
-        <button class="ibtn" id="btnToggleRail">Masquer menu</button>
-        <button class="ibtn" id="btnTogglePanel">Masquer panneau</button>
-        <button class="ibtn" id="btnNewDay">Nouveau jour</button>
+  <div class="shell">
+    <div class="topbar">
+      <div class="left">
+        <button class="iconbtn" id="btnMenu" aria-label="Menu">☰</button>
+        <button class="iconbtn" id="btnNewDay">Nouveau jour</button>
       </div>
 
-      <section class="hero" aria-label="Eliminator">
+      <div class="right chips" aria-label="Compteurs">
+        <span class="chip">Départ <b id="startTasks">0</b> tâches</span>
+        <span class="chip">Reste <b id="leftTasks">0</b> tâches</span>
+        <span class="chip">ETHORION <b id="leftEth">0</b>/<b id="startEth">0</b></span>
+        <span class="chip">Éliminé <b id="elimEth">0</b></span>
+      </div>
+    </div>
+
+    <div class="stage">
+      <section class="focusCard" aria-label="Focus">
         <div class="brand">
-          <h1>ELIMINATOR</h1>
+          <h1>ETHORION</h1>
           <p>Dégommer les tous</p>
         </div>
 
-        <div class="rowTop">
-          <div class="chipRow" aria-label="Compteurs">
-            <span class="chip">Départ <b id="statStartTasks">0</b> tâches</span>
-            <span class="chip">Reste <b id="statLeftTasks">0</b> tâches</span>
-            <span class="chip">ETHORION <b id="statLeftEth">0</b>/<b id="statStartEth">0</b></span>
-          </div>
+        <!-- BIG GLOBAL BAR (remaining %) -->
+        <div class="barWrap" aria-label="Progression globale">
+          <div class="barFill" id="gFill"></div>
+          <div class="barLabel" id="gLabel">100%</div>
         </div>
 
-        <!-- BIG GLOBAL BAR (decreases) -->
-        <div class="gbarWrap" aria-label="Progression globale">
-          <div class="gbarFill" id="gbarFill"></div>
-          <div class="gbarLabel" id="gbarLabel">100%</div>
-        </div>
+        <div class="target" aria-label="Cible">
+          <div class="targetTitle" id="focusTitle">CIBLE EN COURS DE RECHERCHE</div>
+          <div class="targetMeta" id="focusMeta">—</div>
 
-        <!-- Focus task + small bar -->
-        <div class="current" aria-label="Cible">
-          <div class="taskTitle" id="focusText">cible en cours de recherche</div>
-          <div class="taskMeta" id="focusMeta">—</div>
-
-          <div class="chipRow" style="justify-content:space-between;">
+          <div class="chips" style="justify-content:center;">
             <span class="chip">ETHORION <b id="focusEth">0</b></span>
             <span class="chip">Priorité <b id="focusPrio">—</b></span>
             <span class="chip">Énergie <b id="focusEnergy">—</b></span>
           </div>
 
-          <div class="tbarWrap" aria-label="Progression tâche">
-            <div class="tbarFill" id="tbarFill"></div>
-            <div class="tbarLabel" id="tbarLabel">100%</div>
+          <!-- SMALL TASK BAR -->
+          <div class="sbarWrap" aria-label="Progression tâche">
+            <div class="sbarFill" id="tFill"></div>
+            <div class="sbarLabel" id="tLabel">100%</div>
           </div>
 
-          <div class="actionsMain" aria-label="Actions">
+          <div class="actions">
             <button class="btnRoulette" id="btnRoulette" aria-label="Roulette">
               <span class="ring"></span>
               R
@@ -644,76 +589,36 @@
             <button class="btnDego" id="btnDego">Dégommer 1 ETHORION</button>
           </div>
 
-          <div class="rowBtns" style="justify-content:center;">
-            <button class="ibtn" id="btnNotes">Notes</button>
-            <button class="ibtn" id="btnDone">Terminer</button>
-            <button class="ibtn" id="btnSkip">Passer</button>
+          <div class="subActions">
+            <button class="btn" id="btnNotes">Notes</button>
+            <button class="btn" id="btnDone">Terminer</button>
+            <button class="btn" id="btnSkip">Passer</button>
           </div>
         </div>
       </section>
+    </div>
 
-      <div class="hint">Import: seules les lignes qui commencent par “-” deviennent des tâches. Le reste = titres/catégories.</div>
-    </main>
-
-    <!-- Desktop side panel -->
-    <aside class="side" id="side" aria-label="Panneau">
-      <div class="card">
-        <div class="cardTitle">
-          <span>Inbox</span>
-          <span class="hint">Ctrl/⌘+Enter</span>
-        </div>
-        <textarea id="taInbox" placeholder="Catégorie (sans tiret)
-- Tâche – 3 ethorions – 15 minutes – importance 2
-- Tâche 2 – 1 ethorion
-Autre catégorie
-- …"></textarea>
-        <div class="rowBtns">
-          <button class="ibtn" id="btnAdd">Ajouter</button>
-        </div>
-      </div>
-
-      <details open>
-        <summary>Liste</summary>
-        <div class="inside">
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <select id="selSort" aria-label="Tri">
-              <option value="order">Tri: ordre</option>
-              <option value="prio">Tri: priorité</option>
-              <option value="eth">Tri: ethorion restant</option>
-              <option value="cat">Tri: catégorie</option>
-            </select>
-            <button class="ibtn" id="btnOpenCats">Vue catégories</button>
-          </div>
-          <div id="listMain" class="list"></div>
-        </div>
-      </details>
-
-      <details>
-        <summary>Terminé</summary>
-        <div class="inside">
-          <div id="listDone" class="list"></div>
-        </div>
-      </details>
-    </aside>
-  </div>
-
-  <!-- Mobile bottom bar -->
-  <div class="mbar" aria-label="Menu mobile">
-    <button class="mbtn" id="mInbox">Inbox</button>
-    <button class="mbtn" id="mList">Liste</button>
-    <button class="mbtn" id="mRoulette">Roulette</button>
-    <button class="mbtn" id="mDego">Dégommer</button>
+    <div class="hint">
+      Import : seules les lignes qui commencent par “-” sont ajoutées comme tâches. Le reste = catégories.
+      Raccourci : Ctrl/⌘+Enter pour ajouter depuis Inbox.
+    </div>
   </div>
 
   <!-- Drawer -->
   <div class="overlay" id="overlay"></div>
-  <aside class="drawer" id="drawer" aria-label="Tiroir">
+  <aside class="drawer" id="drawer" aria-label="Menu latéral">
     <div class="drawerHeader">
-      <div class="h" id="drawerTitle">—</div>
-      <button class="ibtn" id="drawerClose">Fermer</button>
+      <div class="h">Menu</div>
+      <button class="btn" id="btnClose">Fermer</button>
     </div>
+
+    <div class="tabs" id="tabs"></div>
     <div class="drawerBody" id="drawerBody"></div>
-    <div class="drawerFooter" id="drawerFooter"></div>
+
+    <div class="rowBtns">
+      <button class="btn" id="btnUndo">Undo</button>
+      <button class="btn" id="btnRedo">Redo</button>
+    </div>
   </aside>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -725,79 +630,51 @@ Autre catégorie
   // =========================
   // Storage + State
   // =========================
-  const LS_KEY = "eliminator_v4_ethorion";
-
+  const LS_KEY = "ethorion_app_v1";
   const MAX_HISTORY = 40;
 
   const el = (id)=>document.getElementById(id);
 
-  const rail = el("rail");
-  const side = el("side");
+  // Top counters
+  const startTasksEl = el("startTasks");
+  const leftTasksEl  = el("leftTasks");
+  const startEthEl   = el("startEth");
+  const leftEthEl    = el("leftEth");
+  const elimEthEl    = el("elimEth");
 
-  const taInbox = el("taInbox");
-  const btnAdd = el("btnAdd");
+  // Bars
+  const gFill = el("gFill");
+  const gLabel = el("gLabel");
+  const tFill = el("tFill");
+  const tLabel = el("tLabel");
 
-  const btnToggleRail = el("btnToggleRail");
-  const btnTogglePanel = el("btnTogglePanel");
+  // Focus
+  const focusTitle = el("focusTitle");
+  const focusMeta = el("focusMeta");
+  const focusEth = el("focusEth");
+  const focusPrio = el("focusPrio");
+  const focusEnergy = el("focusEnergy");
+
+  // Buttons
+  const btnMenu = el("btnMenu");
   const btnNewDay = el("btnNewDay");
-
   const btnRoulette = el("btnRoulette");
   const btnDego = el("btnDego");
   const btnNotes = el("btnNotes");
   const btnDone = el("btnDone");
   const btnSkip = el("btnSkip");
 
-  const selSort = el("selSort");
-  const btnOpenCats = el("btnOpenCats");
-
-  const statStartTasks = el("statStartTasks");
-  const statLeftTasks = el("statLeftTasks");
-  const statStartEth = el("statStartEth");
-  const statLeftEth  = el("statLeftEth");
-
-  const gbarFill = el("gbarFill");
-  const gbarLabel = el("gbarLabel");
-
-  const focusText = el("focusText");
-  const focusMeta = el("focusMeta");
-  const focusEth = el("focusEth");
-  const focusPrio = el("focusPrio");
-  const focusEnergy = el("focusEnergy");
-
-  const tbarFill = el("tbarFill");
-  const tbarLabel = el("tbarLabel");
-
-  const listMain = el("listMain");
-  const listDone = el("listDone");
-
+  // Drawer
   const overlay = el("overlay");
   const drawer = el("drawer");
-  const drawerTitle = el("drawerTitle");
+  const btnClose = el("btnClose");
+  const tabs = el("tabs");
   const drawerBody = el("drawerBody");
-  const drawerFooter = el("drawerFooter");
-  const drawerClose = el("drawerClose");
+  const btnUndo = el("btnUndo");
+  const btnRedo = el("btnRedo");
 
+  // Toast + FX
   const toast = el("toast");
-  const dayLabel = el("dayLabel");
-
-  // Nav (desktop)
-  const navInbox = el("navInbox");
-  const navList = el("navList");
-  const navCats = el("navCats");
-  const navSets = el("navSets");
-  const navEnergy = el("navEnergy");
-  const navHistory = el("navHistory");
-  const navReport = el("navReport");
-  const navUndo = el("navUndo");
-  const navRedo = el("navRedo");
-
-  // Mobile
-  const mInbox = el("mInbox");
-  const mList  = el("mList");
-  const mRoulette = el("mRoulette");
-  const mDego = el("mDego");
-
-  // FX
   const fxCanvas = el("fx");
   const fx = fxCanvas.getContext("2d");
 
@@ -805,45 +682,58 @@ Autre catégorie
   const clamp = (n,a,b)=>Math.max(a, Math.min(b,n));
   const uid = ()=> Math.random().toString(36).slice(2,10)+"-"+Date.now().toString(36);
 
+  // =========================
+  // Default State
+  // =========================
+  function isoDay(d = new Date()){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const da = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${da}`;
+  }
+
   function initial(){
     const today = isoDay();
     return {
-      version: 4,
-      ui: {
-        railHidden: false,
-        panelHidden: false,
-        sort: "order"
-      },
+      version: 1,
       day: {
         id: today,
         startTasks: 0,
-        startEthorion: 0
-      },
-      energyProfile: {
-        level: 2, // 1 low, 2 mid, 3 high
-        motivation: 2 // 1..3
+        startEth: 0
       },
       focusId: null,
+      energyProfile: { level: 2, motivation: 2 }, // 1..3
+      ui: { activeTab: "inbox", sort: "order" },
       tasks: [],
       sets: [
-        { id:"s_consult", name:"Consult", lines:[
-          "PATIENTS",
-          "- Patient 1 – 2 ethorions – importance 3",
-          "- Patient 2 – 2 ethorions – importance 3",
-          "- Patient 3 – 2 ethorions – importance 3",
-          "- Patient 4 – 2 ethorions – importance 3",
-          "ENCODAGE",
-          "- Encoder la note Patient 1 – 1 ethorion – importance 2",
-          "- Encoder la note Patient 2 – 1 ethorion – importance 2",
-          "- Encoder la note Patient 3 – 1 ethorion – importance 2",
-          "- Encoder la note Patient 4 – 1 ethorion – importance 2"
-        ] }
+        {
+          id: "set_consult",
+          name: "Consult",
+          lines: [
+            "PATIENTS",
+            "- Patient 1 – 2 ethorions – importance 3",
+            "- Patient 2 – 2 ethorions – importance 3",
+            "- Patient 3 – 2 ethorions – importance 3",
+            "- Patient 4 – 2 ethorions – importance 3",
+            "ENCODAGE",
+            "- Encoder la note Patient 1 – 1 ethorion – importance 2",
+            "- Encoder la note Patient 2 – 1 ethorion – importance 2",
+            "- Encoder la note Patient 3 – 1 ethorion – importance 2",
+            "- Encoder la note Patient 4 – 1 ethorion – importance 2"
+          ]
+        },
+        {
+          id: "set_appels",
+          name: "Appels",
+          lines: [
+            "APPELS",
+            "- Appeler X – 1 ethorion – importance 2",
+            "- Appeler Y – 1 ethorion – importance 2"
+          ]
+        }
       ],
-      history: {
-        undo: [],
-        redo: []
-      },
-      events: [] // simple visible history log
+      history: { undo: [], redo: [] },
+      events: [] // visible history log
     };
   }
 
@@ -857,20 +747,15 @@ Autre catégorie
       if(!raw) return null;
       const obj = JSON.parse(raw);
       if(!obj || !Array.isArray(obj.tasks)) return null;
-      if(!obj.day) obj.day = initial().day;
-      if(!obj.ui) obj.ui = initial().ui;
+      // basic migrations
+      if(!obj.sets) obj.sets = initial().sets;
       if(!obj.history) obj.history = {undo:[], redo:[]};
-      if(!Array.isArray(obj.events)) obj.events = [];
-      if(!Array.isArray(obj.sets)) obj.sets = initial().sets;
+      if(!obj.events) obj.events = [];
+      if(!obj.energyProfile) obj.energyProfile = {level:2, motivation:2};
+      if(!obj.ui) obj.ui = {activeTab:"inbox", sort:"order"};
+      if(!obj.day) obj.day = initial().day;
       return obj;
     }catch{ return null; }
-  }
-
-  function isoDay(d = new Date()){
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const da = String(d.getDate()).padStart(2,"0");
-    return `${y}-${m}-${da}`;
   }
 
   // =========================
@@ -878,9 +763,13 @@ Autre catégorie
   // =========================
   function snapshot(){
     const s = structuredClone({...state});
-    // history inside snapshot would blow; keep it minimal
     s.history = {undo:[], redo:[]};
     return s;
+  }
+
+  function logEvent(text){
+    state.events.push({ t: now(), text: String(text).slice(0,220) });
+    state.events = state.events.slice(-200);
   }
 
   function pushHistory(label){
@@ -915,17 +804,12 @@ Autre catégorie
   }
 
   function updateUndoRedo(){
-    navUndo.disabled = state.history.undo.length===0;
-    navRedo.disabled = state.history.redo.length===0;
-  }
-
-  function logEvent(text){
-    state.events.push({ t: now(), text: String(text).slice(0,200) });
-    state.events = state.events.slice(-160);
+    btnUndo.disabled = state.history.undo.length===0;
+    btnRedo.disabled = state.history.redo.length===0;
   }
 
   // =========================
-  // Text parsing rules
+  // Parsing
   // =========================
   function cleanLine(s){
     let x = String(s||"").trim();
@@ -934,7 +818,6 @@ Autre catégorie
   }
 
   function isTaskLine(line){
-    // RULE: only lines starting with '-' are tasks.
     return /^-\s+/.test(line);
   }
 
@@ -943,7 +826,6 @@ Autre catégorie
   }
 
   function parseEthorion(text){
-    // match "3 ethorions" or "1 ethorion" or "3 eth" etc.
     const t = text.toLowerCase();
     const m = t.match(/(\d{1,2})\s*(?:ethorion|ethorions|eth)\b/);
     if(m) return clamp(parseInt(m[1],10)||1, 1, 50);
@@ -952,7 +834,6 @@ Autre catégorie
 
   function parseMinutes(text){
     const t = text.toLowerCase();
-    // "15 minutes" or "5 min"
     const m = t.match(/(\d{1,3})\s*(?:minutes|minute|min)\b/);
     if(m) return clamp(parseInt(m[1],10)||0, 1, 999);
     return null;
@@ -960,32 +841,23 @@ Autre catégorie
 
   function parseImportance(text){
     const t = text.toLowerCase();
-    // "importance 3" or "prio 2" or "priorité 1"
     const m = t.match(/\b(?:importance|prio|priorité)\s*(\d)\b/);
     if(m) return clamp(parseInt(m[1],10)||2, 1, 3);
     return null;
   }
 
   function removeMetaFromTitle(raw){
-    // Remove separators "– 3 ethorions – 15 minutes – importance 2"
-    // Keep the "real" task name.
-    // Strategy: split on '–' and '-' BUT keep first segment as title, then trim.
-    let x = raw;
-    // normalize dashes
-    x = x.replace(/\s*[—–]\s*/g, " – ");
+    // normalize dashes and keep first segment as title
+    let x = raw.replace(/\s*[—–]\s*/g, " – ");
     const parts = x.split(" – ").map(p=>p.trim()).filter(Boolean);
-    if(!parts.length) return raw.trim();
-    // If first part is empty, fallback
-    const title = parts[0].trim();
-    return title || raw.trim();
+    return (parts[0] || raw).trim();
   }
 
   function inferEnergyFromText(title, category){
     const t = (title+" "+(category||"")).toLowerCase();
-    // very simple heuristics
-    if(/\b(appeler|tél|tel|téléphone|mail|email|encoder|encodage|note)\b/.test(t)) return 1; // low
-    if(/\b(rapport|rédaction|dossier|analyse)\b/.test(t)) return 3; // high
-    return 2; // mid
+    if(/\b(appeler|tél|tel|téléphone|mail|email|encoder|encodage|note)\b/.test(t)) return 1;
+    if(/\b(rapport|rédaction|dossier|analyse)\b/.test(t)) return 3;
+    return 2;
   }
 
   function parsePasted(raw){
@@ -998,7 +870,6 @@ Autre catégorie
       if(!line) continue;
 
       if(!isTaskLine(line)){
-        // category title, not a task
         currentCategory = line.replace(/:+$/,"").trim() || currentCategory;
         continue;
       }
@@ -1006,12 +877,10 @@ Autre catégorie
       const body = stripTaskPrefix(line);
 
       const eth = parseEthorion(body) ?? 3;
-      const minutes = parseMinutes(body); // optional
+      const minutes = parseMinutes(body);
       const prio = parseImportance(body) ?? 2;
 
-      const titleRaw = removeMetaFromTitle(body);
-      const title = cleanLine(titleRaw);
-
+      const title = cleanLine(removeMetaFromTitle(body));
       out.push({
         title,
         category: currentCategory,
@@ -1022,13 +891,41 @@ Autre catégorie
         energyTag: inferEnergyFromText(title, currentCategory)
       });
     }
-
     return out;
   }
 
   // =========================
-  // Tasks data model
-  // task = { id, title, category, ethorionTotal, ethorionRemaining, priority, energyTag, notes, done, order, createdAt, doneAt }
+  // Day baseline
+  // =========================
+  function ensureDay(){
+    const today = isoDay();
+    if(state.day.id !== today){
+      state.day.id = today;
+      state.day.startTasks = 0;
+      state.day.startEth = 0;
+    }
+    if(state.day.startTasks===0 && state.day.startEth===0){
+      setDayBaseline("Départ fixé");
+    }
+  }
+
+  function setDayBaseline(label){
+    const active = state.tasks.filter(t=>!t.done);
+    state.day.startTasks = active.length;
+    state.day.startEth = active.reduce((a,t)=>a + (t.ethorionRemaining||0), 0);
+    logEvent(label || "Départ fixé");
+    save();
+  }
+
+  function newDay(){
+    pushHistory("Nouveau jour");
+    setDayBaseline("Nouveau jour");
+    renderAll();
+    showToast("Nouveau jour.", 2400);
+  }
+
+  // =========================
+  // Tasks
   // =========================
   function nextOrder(){
     const act = state.tasks.filter(t=>!t.done);
@@ -1042,7 +939,6 @@ Autre catégorie
       showToast("Rien (vérifie les tirets).", 2600);
       return;
     }
-
     pushHistory(`Ajout ${parsed.length} tâche(s)`);
 
     const start = nextOrder();
@@ -1058,15 +954,13 @@ Autre catégorie
         energyTag: p.energyTag,
         notes: "",
         done: false,
-        order: start + i,
+        order: start+i,
         createdAt: now(),
         doneAt: null
       });
     });
 
-    // If day baseline not set or different day, update
     ensureDay();
-    // If no focus, choose one
     if(!state.focusId){
       const t = pickWeightedTask();
       if(t) state.focusId = t.id;
@@ -1074,133 +968,15 @@ Autre catégorie
 
     save();
     renderAll();
-    showToast("Ajouté.", 2200);
+    showToast("Ajouté.", 2400);
   }
 
-  // =========================
-  // Day baseline
-  // =========================
-  function ensureDay(){
-    const today = isoDay();
-    if(state.day.id !== today){
-      state.day.id = today;
-      state.day.startTasks = 0;
-      state.day.startEthorion = 0;
-    }
-    // If baseline is 0, set to current active totals
-    if(state.day.startTasks === 0 && state.day.startEthorion === 0){
-      setDayBaseline("Départ fixé");
-    }
-  }
-
-  function setDayBaseline(label){
-    const active = state.tasks.filter(t=>!t.done);
-    const startTasks = active.length;
-    const startEth = active.reduce((a,t)=>a + (t.ethorionRemaining||0), 0);
-    state.day.startTasks = startTasks;
-    state.day.startEthorion = startEth;
-    logEvent(label || "Départ fixé");
-    save();
-  }
-
-  function newDay(){
-    pushHistory("Nouveau jour");
-    // Clears done tasks optional? You didn't ask. We'll keep done but reset baseline.
-    setDayBaseline("Nouveau jour");
-    renderAll();
-    showToast("Nouveau jour.", 2200);
-  }
-
-  // =========================
-  // Weighted roulette with energy/motivation
-  // =========================
-  function pickWeightedTask(){
-    const pool = state.tasks.filter(t=>!t.done && (t.ethorionRemaining||0) > 0);
-    if(!pool.length) return null;
-
-    const E = state.energyProfile.level; // 1..3
-    const M = state.energyProfile.motivation; // 1..3
-
-    // scoring:
-    // - more ethorion remaining -> more weight
-    // - higher priority -> more weight
-    // - energy fit: prefer tasks whose energyTag <= user's energy when low; when high allow all
-    // - motivation: when low, tilt toward small tasks (low ethorion)
-    const weights = pool.map(t=>{
-      const rem = Math.max(1, Math.ceil(t.ethorionRemaining||1));
-      const pr = (t.priority===3? 3 : t.priority===2? 2 : 1);
-
-      // energy fit (soft)
-      let fit = 1.0;
-      if(E===1){
-        fit *= (t.energyTag===1 ? 1.35 : t.energyTag===2 ? 0.95 : 0.60);
-      }else if(E===2){
-        fit *= (t.energyTag===1 ? 1.10 : t.energyTag===2 ? 1.20 : 0.95);
-      }else{
-        fit *= (t.energyTag===3 ? 1.25 : 1.05);
-      }
-
-      // motivation effect: low motivation favors smaller chunks
-      let mot = 1.0;
-      if(M===1){
-        mot *= (rem<=2 ? 1.35 : rem<=4 ? 1.05 : 0.75);
-      }else if(M===2){
-        mot *= (rem<=3 ? 1.15 : 1.0);
-      }else{
-        mot *= 1.0;
-      }
-
-      const w = rem * pr * fit * mot;
-      return Math.max(0.2, w);
-    });
-
-    const total = weights.reduce((a,b)=>a+b,0);
-    let r = Math.random()*total;
-    for(let i=0;i<pool.length;i++){
-      r -= weights[i];
-      if(r<=0) return pool[i];
-    }
-    return pool[pool.length-1];
-  }
-
-  // =========================
-  // Actions
-  // =========================
   function getTask(id){ return state.tasks.find(t=>t.id===id) || null; }
 
   function setFocus(id){
     state.focusId = id;
     save();
     renderFocus();
-  }
-
-  function degoOneEthorion(){
-    const t = getTask(state.focusId);
-    if(!t){
-      showToast("Cible introuvable.", 2200);
-      return;
-    }
-    if(t.ethorionRemaining<=0){
-      // just finish
-      finishTask(t.id);
-      return;
-    }
-
-    pushHistory("Dégommage");
-
-    t.ethorionRemaining = Math.max(0, t.ethorionRemaining - 1);
-
-    if(t.ethorionRemaining===0){
-      // auto finish
-      finishTask(t.id, {silent:true});
-    }
-
-    save();
-    renderAll();
-
-    confetti(0.9);
-    flash();
-    showToast(pick(LINES), 2600);
   }
 
   function finishTask(taskId, opts={}){
@@ -1213,12 +989,10 @@ Autre catégorie
     t.doneAt = now();
     t.ethorionRemaining = 0;
 
-    // celebration
-    confetti(2.0);
+    confetti(2.2);
     flash();
-    showToast(pick(DONE_LINES), 3200);
+    showToast(pick(DONE_LINES), 3400);
 
-    // pick next
     const next = pickWeightedTask();
     state.focusId = next ? next.id : null;
 
@@ -1226,18 +1000,35 @@ Autre catégorie
     renderAll();
   }
 
-  function skipTask(){
-    // choose another
-    const next = pickWeightedTask();
-    if(!next){
-      state.focusId = null;
-      save();
-      renderAll();
-      showToast("Plus de cibles.", 2400);
+  function degoOne(){
+    const t = getTask(state.focusId);
+    if(!t){
+      showToast("CIBLE INDISPONIBLE.", 2400);
       return;
     }
-    setFocus(next.id);
-    showToast("Cible changée.", 2200);
+
+    pushHistory("Dégommage");
+    t.ethorionRemaining = Math.max(0, (t.ethorionRemaining||0) - 1);
+
+    confetti(1.0);
+    flash();
+    showToast(pick(LINES), 2600);
+
+    if(t.ethorionRemaining===0){
+      finishTask(t.id, {silent:true});
+      return;
+    }
+
+    save();
+    renderAll();
+  }
+
+  function skip(){
+    const next = pickWeightedTask();
+    state.focusId = next ? next.id : null;
+    save();
+    renderAll();
+    showToast(next ? "CIBLE CHANGÉE." : "PLUS DE CIBLES.", 2400);
   }
 
   function deleteTask(taskId){
@@ -1253,14 +1044,14 @@ Autre catégorie
     const t = getTask(taskId);
     if(!t) return;
     pushHistory("Dupliquer tâche");
-    const copy = structuredClone(t);
-    copy.id = uid();
-    copy.done = false;
-    copy.doneAt = null;
-    copy.ethorionRemaining = copy.ethorionTotal;
-    copy.order = nextOrder();
-    copy.createdAt = now();
-    state.tasks.push(copy);
+    const c = structuredClone(t);
+    c.id = uid();
+    c.done = false;
+    c.doneAt = null;
+    c.ethorionRemaining = c.ethorionTotal;
+    c.order = nextOrder();
+    c.createdAt = now();
+    state.tasks.push(c);
     save();
     renderAll();
     showToast("Dupliqué.", 2200);
@@ -1271,9 +1062,9 @@ Autre catégorie
     if(!t || t.done) return;
     const val = prompt("ETHORION total ?", String(t.ethorionTotal||3));
     if(val===null) return;
-    const n = clamp(parseInt(val,10)||t.ethorionTotal||3, 1, 50);
 
     pushHistory("Régler ethorion");
+    const n = clamp(parseInt(val,10)||t.ethorionTotal||3, 1, 50);
 
     const wasTotal = Math.max(1, t.ethorionTotal||1);
     const wasRem = clamp(t.ethorionRemaining||0, 0, wasTotal);
@@ -1289,11 +1080,86 @@ Autre catégorie
   }
 
   // =========================
-  // Sorting + category view
+  // Weighted roulette with energy/motivation
   // =========================
-  function getActiveTasksSorted(){
-    const items = state.tasks.filter(t=>!t.done);
+  function pickWeightedTask(){
+    const pool = state.tasks.filter(t=>!t.done && (t.ethorionRemaining||0) > 0);
+    if(!pool.length) return null;
 
+    const E = state.energyProfile.level;      // 1..3
+    const M = state.energyProfile.motivation; // 1..3
+
+    const weights = pool.map(t=>{
+      const rem = Math.max(1, Math.ceil(t.ethorionRemaining||1));
+      const pr = (t.priority===3? 3 : t.priority===2? 2 : 1);
+
+      let fit = 1.0;
+      if(E===1){
+        fit *= (t.energyTag===1 ? 1.45 : t.energyTag===2 ? 0.95 : 0.55);
+      }else if(E===2){
+        fit *= (t.energyTag===1 ? 1.10 : t.energyTag===2 ? 1.25 : 0.95);
+      }else{
+        fit *= (t.energyTag===3 ? 1.30 : 1.05);
+      }
+
+      let mot = 1.0;
+      if(M===1){
+        mot *= (rem<=2 ? 1.45 : rem<=4 ? 1.05 : 0.70);
+      }else if(M===2){
+        mot *= (rem<=3 ? 1.15 : 1.0);
+      }else{
+        mot *= 1.0;
+      }
+
+      return Math.max(0.2, rem * pr * fit * mot);
+    });
+
+    const total = weights.reduce((a,b)=>a+b,0);
+    let r = Math.random()*total;
+    for(let i=0;i<pool.length;i++){
+      r -= weights[i];
+      if(r<=0) return pool[i];
+    }
+    return pool[pool.length-1];
+  }
+
+  // Roulette suspense
+  let rouletteLock = false;
+  function roulette(){
+    if(rouletteLock) return;
+    rouletteLock = true;
+    btnRoulette.disabled = true;
+    btnRoulette.classList.add("spinning");
+
+    showToast("scan…", 1100);
+    const suspense = 650 + Math.floor(Math.random()*260);
+
+    setTimeout(()=>{
+      const t = pickWeightedTask();
+      if(t){
+        state.focusId = t.id;
+        showToast("CIBLE VERROUILLÉE.", 2400);
+        confetti(1.2);
+        flash();
+      }else{
+        state.focusId = null;
+        showToast("PLUS DE CIBLES.", 2400);
+      }
+
+      btnRoulette.disabled = false;
+      btnRoulette.classList.remove("spinning");
+      rouletteLock = false;
+
+      save();
+      renderAll();
+    }, suspense);
+  }
+
+  // =========================
+  // Sorting + drag reorder (Liste)
+  // =========================
+  function getActiveSorted(){
+    const items = state.tasks.filter(t=>!t.done);
     const sort = state.ui.sort || "order";
     if(sort==="prio"){
       items.sort((a,b)=>(b.priority||2)-(a.priority||2) || (a.order||0)-(b.order||0));
@@ -1307,460 +1173,46 @@ Autre catégorie
     return items;
   }
 
-  function groupByCategory(tasks){
-    const m = new Map();
-    tasks.forEach(t=>{
-      const k = t.category || "Sans catégorie";
-      if(!m.has(k)) m.set(k, []);
-      m.get(k).push(t);
+  function applyOrderFromList(ids){
+    // set order sequentially
+    let k = 1;
+    ids.forEach(id=>{
+      const t = getTask(id);
+      if(t && !t.done) t.order = k++;
     });
-    const keys = [...m.keys()].sort((a,b)=>a.localeCompare(b,"fr"));
-    return { map:m, keys };
-  }
-
-  // =========================
-  // UI: drawers
-  // =========================
-  function openDrawer(title, bodyNode, footerNode){
-    drawerTitle.textContent = title;
-    drawerBody.innerHTML = "";
-    drawerFooter.innerHTML = "";
-    drawerBody.appendChild(bodyNode);
-    if(footerNode) drawerFooter.appendChild(footerNode);
-    overlay.classList.add("show");
-    drawer.classList.add("show");
-  }
-
-  function closeDrawer(){
-    overlay.classList.remove("show");
-    drawer.classList.remove("show");
-  }
-  overlay.addEventListener("click", closeDrawer);
-  drawerClose.addEventListener("click", closeDrawer);
-
-  function openInboxDrawer(){
-    const wrap = document.createElement("div");
-    wrap.style.display="grid";
-    wrap.style.gap="10px";
-
-    const hint = document.createElement("div");
-    hint.className="hint";
-    hint.textContent = "Catégories = lignes sans tiret. Tâches = lignes qui commencent par “-”.";
-
-    const ta = document.createElement("textarea");
-    ta.placeholder = "Catégorie\n- Tâche – 3 ethorions – importance 2\n- …";
-    ta.style.minHeight="160px";
-
-    wrap.appendChild(hint);
-    wrap.appendChild(ta);
-
-    const footer = document.createElement("div");
-    footer.style.display="flex";
-    footer.style.gap="10px";
-    footer.style.justifyContent="flex-end";
-
-    const add = document.createElement("button");
-    add.className="ibtn";
-    add.textContent="Ajouter";
-    add.addEventListener("click", ()=>{
-      addTasksFromText(ta.value);
-      closeDrawer();
-    });
-
-    footer.appendChild(add);
-    openDrawer("Inbox", wrap, footer);
-  }
-
-  function openListDrawer(){
-    const wrap = document.createElement("div");
-    wrap.style.display="grid";
-    wrap.style.gap="10px";
-
-    const list = document.createElement("div");
-    list.className="list";
-
-    const items = getActiveTasksSorted();
-    items.forEach(t=>{
-      list.appendChild(renderTaskRow(t, {compact:false}));
-    });
-
-    wrap.appendChild(list);
-    openDrawer("Liste", wrap, null);
-  }
-
-  function openCategoriesDrawer(){
-    const wrap = document.createElement("div");
-    wrap.style.display="grid";
-    wrap.style.gap="10px";
-
-    const items = getActiveTasksSorted();
-    const {map, keys} = groupByCategory(items);
-
-    keys.forEach(cat=>{
-      const det = document.createElement("details");
-      det.open = false;
-
-      const sum = document.createElement("summary");
-      const tot = map.get(cat).reduce((a,t)=>a+(t.ethorionRemaining||0),0);
-      sum.textContent = `${cat} — ETHORION ${tot}`;
-      det.appendChild(sum);
-
-      const inside = document.createElement("div");
-      inside.className="inside";
-      const list = document.createElement("div");
-      list.className="list";
-      map.get(cat).forEach(t=> list.appendChild(renderTaskRow(t, {compact:true})));
-      inside.appendChild(list);
-      det.appendChild(inside);
-
-      wrap.appendChild(det);
-    });
-
-    openDrawer("Catégories", wrap, null);
-  }
-
-  function openSetsDrawer(){
-    const wrap = document.createElement("div");
-    wrap.style.display="grid";
-    wrap.style.gap="12px";
-
-    const hint = document.createElement("div");
-    hint.className="hint";
-    hint.textContent="Sets = groupes de tâches récurrents. Appliquer = ajoute les tâches.";
-
-    wrap.appendChild(hint);
-
-    const list = document.createElement("div");
-    list.className="list";
-
-    state.sets.forEach(s=>{
-      const row = document.createElement("div");
-      row.className="trow";
-      row.innerHTML = `
-        <div class="trowTop">
-          <div>
-            <div class="tname">${escapeHtml(s.name)}</div>
-            <div class="tmini">${escapeHtml(String((s.lines||[]).length))} lignes</div>
-          </div>
-          <div class="tacts">
-            <button class="ibtn" data-a="apply">Appliquer</button>
-            <button class="ibtn" data-a="edit">Éditer</button>
-            <button class="ibtn" data-a="del">X</button>
-          </div>
-        </div>
-      `;
-      row.querySelector('[data-a="apply"]').addEventListener("click", ()=>{
-        addTasksFromText((s.lines||[]).join("\n"));
-        showToast("Set appliqué.", 2600);
-      });
-      row.querySelector('[data-a="edit"]').addEventListener("click", ()=> openEditSetDrawer(s.id));
-      row.querySelector('[data-a="del"]').addEventListener("click", ()=>{
-        if(!confirm("Supprimer set ?")) return;
-        pushHistory("Supprimer set");
-        state.sets = state.sets.filter(x=>x.id!==s.id);
-        save();
-        closeDrawer();
-        openSetsDrawer();
-      });
-
-      list.appendChild(row);
-    });
-
-    wrap.appendChild(list);
-
-    const footer = document.createElement("div");
-    footer.style.display="flex";
-    footer.style.justifyContent="flex-end";
-
-    const add = document.createElement("button");
-    add.className="ibtn";
-    add.textContent="+ Set";
-    add.addEventListener("click", ()=> openEditSetDrawer(null));
-    footer.appendChild(add);
-
-    openDrawer("Sets", wrap, footer);
-  }
-
-  function openEditSetDrawer(setId){
-    const existing = setId ? state.sets.find(s=>s.id===setId) : null;
-
-    const wrap = document.createElement("div");
-    wrap.style.display="grid";
-    wrap.style.gap="10px";
-
-    const name = document.createElement("input");
-    name.type="text";
-    name.placeholder="Nom du set";
-    name.value = existing ? existing.name : "";
-
-    const ta = document.createElement("textarea");
-    ta.placeholder="Catégorie\n- tâche\n- tâche";
-    ta.style.minHeight="180px";
-    ta.value = existing ? (existing.lines||[]).join("\n") : "";
-
-    const hint = document.createElement("div");
-    hint.className="hint";
-    hint.textContent="Rappel: seules les lignes avec “-” deviennent des tâches.";
-
-    wrap.appendChild(hint);
-    wrap.appendChild(name);
-    wrap.appendChild(ta);
-
-    const footer = document.createElement("div");
-    footer.style.display="flex";
-    footer.style.gap="10px";
-    footer.style.justifyContent="flex-end";
-
-    const saveBtn = document.createElement("button");
-    saveBtn.className="ibtn";
-    saveBtn.textContent="Enregistrer";
-    saveBtn.addEventListener("click", ()=>{
-      const n = cleanLine(name.value).slice(0,40);
-      const lines = String(ta.value||"").split(/\r?\n/).map(cleanLine).filter(Boolean);
-      if(!n){ showToast("Nom ?", 2200); return; }
-      if(!lines.length){ showToast("Lignes ?", 2200); return; }
-
-      pushHistory("Enregistrer set");
-
-      if(existing){
-        existing.name = n;
-        existing.lines = lines;
-      }else{
-        state.sets.push({ id:"s_"+uid(), name:n, lines });
-      }
-
-      save();
-      closeDrawer();
-      openSetsDrawer();
-      showToast("OK", 2000);
-    });
-
-    footer.appendChild(saveBtn);
-    openDrawer(existing ? "Éditer set" : "Nouveau set", wrap, footer);
-  }
-
-  function openEnergyDrawer(){
-    const wrap = document.createElement("div");
-    wrap.style.display="grid";
-    wrap.style.gap="12px";
-
-    const hint = document.createElement("div");
-    hint.className="hint";
-    hint.textContent="Ce réglage influence la roulette: énergie basse = tâches “légères” favorisées.";
-
-    const block = document.createElement("div");
-    block.className="card";
-    block.style.background="rgba(0,0,0,0.10)";
-    block.style.border="1px solid rgba(255,255,255,0.08)";
-
-    const lvl = document.createElement("select");
-    lvl.innerHTML = `
-      <option value="1">Énergie: basse</option>
-      <option value="2">Énergie: moyenne</option>
-      <option value="3">Énergie: haute</option>
-    `;
-    lvl.value = String(state.energyProfile.level||2);
-
-    const mot = document.createElement("select");
-    mot.innerHTML = `
-      <option value="1">Motivation: basse</option>
-      <option value="2">Motivation: moyenne</option>
-      <option value="3">Motivation: haute</option>
-    `;
-    mot.value = String(state.energyProfile.motivation||2);
-
-    const saveBtn = document.createElement("button");
-    saveBtn.className="ibtn";
-    saveBtn.textContent="Appliquer";
-    saveBtn.addEventListener("click", ()=>{
-      pushHistory("Énergie réglée");
-      state.energyProfile.level = parseInt(lvl.value,10);
-      state.energyProfile.motivation = parseInt(mot.value,10);
-      save();
-      renderAll();
-      showToast("OK", 2200);
-      closeDrawer();
-    });
-
-    block.appendChild(lvl);
-    block.appendChild(mot);
-
-    wrap.appendChild(hint);
-    wrap.appendChild(block);
-
-    const footer = document.createElement("div");
-    footer.style.display="flex";
-    footer.style.justifyContent="flex-end";
-    footer.appendChild(saveBtn);
-
-    openDrawer("Énergie", wrap, footer);
-  }
-
-  function openHistoryDrawer(){
-    const wrap = document.createElement("div");
-    wrap.style.display="grid";
-    wrap.style.gap="10px";
-
-    const hint = document.createElement("div");
-    hint.className="hint";
-    hint.textContent="Historique (visible). Undo/Redo reste disponible via les boutons.";
-
-    const list = document.createElement("div");
-    list.className="list";
-
-    const items = state.events.slice().reverse().slice(0, 80);
-    items.forEach(ev=>{
-      const row = document.createElement("div");
-      row.className="trow";
-      const d = new Date(ev.t);
-      const ts = `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
-      row.innerHTML = `
-        <div class="tmini"><b>${escapeHtml(ts)}</b> · ${escapeHtml(ev.text)}</div>
-      `;
-      list.appendChild(row);
-    });
-
-    wrap.appendChild(hint);
-    wrap.appendChild(list);
-
-    openDrawer("Historique", wrap, null);
-  }
-
-  function openReportDrawer(){
-    const wrap = document.createElement("div");
-    wrap.style.display="grid";
-    wrap.style.gap="12px";
-
-    const active = state.tasks.filter(t=>!t.done);
-    const done = state.tasks.filter(t=>t.done);
-
-    const leftTasks = active.length;
-    const leftEth = active.reduce((a,t)=>a+(t.ethorionRemaining||0),0);
-    const doneTasks = done.length;
-
-    const startT = state.day.startTasks || 0;
-    const startE = state.day.startEthorion || 0;
-
-    const pct = (startE>0) ? Math.round((leftEth/startE)*100) : 100;
-
-    const box = document.createElement("div");
-    box.className="trow";
-    box.innerHTML = `
-      <div class="tname">Rapport du jour</div>
-      <div class="tmini">Départ: ${escapeHtml(String(startT))} tâches · ${escapeHtml(String(startE))} ETHORION</div>
-      <div class="tmini">Reste: ${escapeHtml(String(leftTasks))} tâches · ${escapeHtml(String(leftEth))} ETHORION</div>
-      <div class="tmini">Terminé: ${escapeHtml(String(doneTasks))} tâches</div>
-      <div class="tmini">Progression: ${escapeHtml(String(100-pct))}% fait</div>
-    `;
-
-    const byCat = {};
-    state.tasks.forEach(t=>{
-      const c = t.category || "Sans catégorie";
-      if(!byCat[c]) byCat[c] = { total:0, left:0, n:0 };
-      byCat[c].n++;
-      byCat[c].total += (t.ethorionTotal||0);
-      byCat[c].left += (t.done?0:(t.ethorionRemaining||0));
-    });
-
-    const list = document.createElement("div");
-    list.className="list";
-    Object.keys(byCat).sort((a,b)=>a.localeCompare(b,"fr")).forEach(c=>{
-      const r = byCat[c];
-      const row = document.createElement("div");
-      row.className="trow";
-      row.innerHTML = `
-        <div class="tname">${escapeHtml(c)}</div>
-        <div class="tmini">${escapeHtml(String(r.n))} tâches · ETHORION reste ${escapeHtml(String(r.left))}/${escapeHtml(String(r.total))}</div>
-      `;
-      list.appendChild(row);
-    });
-
-    wrap.appendChild(box);
-    wrap.appendChild(list);
-
-    openDrawer("Rapport", wrap, null);
-  }
-
-  function openNotesDrawer(){
-    const t = getTask(state.focusId);
-    const wrap = document.createElement("div");
-    wrap.style.display="grid";
-    wrap.style.gap="10px";
-
-    const ta = document.createElement("textarea");
-    ta.placeholder="Notes";
-    ta.style.minHeight="150px";
-    ta.value = t ? (t.notes||"") : "";
-
-    const hint = document.createElement("div");
-    hint.className="hint";
-    hint.textContent="Notes liées à la cible actuelle.";
-
-    wrap.appendChild(hint);
-    wrap.appendChild(ta);
-
-    const footer = document.createElement("div");
-    footer.style.display="flex";
-    footer.style.justifyContent="flex-end";
-
-    const saveBtn = document.createElement("button");
-    saveBtn.className="ibtn";
-    saveBtn.textContent="Enregistrer";
-    saveBtn.addEventListener("click", ()=>{
-      if(!t){
-        closeDrawer();
-        return;
-      }
-      pushHistory("Note enregistrée");
-      t.notes = ta.value.slice(0, 12000);
-      save();
-      showToast("Note ok.", 2200);
-      closeDrawer();
-      renderAll();
-    });
-
-    footer.appendChild(saveBtn);
-    openDrawer("Notes", wrap, footer);
   }
 
   // =========================
   // Rendering
   // =========================
-  function escapeHtml(s){
-    return String(s ?? "").replace(/[&<>"']/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[c]));
-  }
-
   function sumActiveEth(){
     return state.tasks.reduce((a,t)=>a + (t.done?0:(t.ethorionRemaining||0)), 0);
   }
-
   function countActiveTasks(){
     return state.tasks.filter(t=>!t.done).length;
   }
 
-  function renderGlobal(){
+  function renderCounters(){
     ensureDay();
 
     const leftTasks = countActiveTasks();
     const leftEth = sumActiveEth();
 
     const startT = state.day.startTasks || leftTasks;
-    const startE = state.day.startEthorion || leftEth;
+    const startE = state.day.startEth || leftEth;
 
-    statStartTasks.textContent = String(startT);
-    statLeftTasks.textContent  = String(leftTasks);
-    statStartEth.textContent   = String(startE);
-    statLeftEth.textContent    = String(leftEth);
+    const elimEth = Math.max(0, startE - leftEth);
 
-    // global bar is "remaining percentage"
+    startTasksEl.textContent = String(startT);
+    leftTasksEl.textContent  = String(leftTasks);
+    startEthEl.textContent   = String(startE);
+    leftEthEl.textContent    = String(leftEth);
+    elimEthEl.textContent    = String(elimEth);
+
     const denom = Math.max(1, startE);
     const pctLeft = clamp(Math.round((leftEth/denom)*100), 0, 100);
-    gbarFill.style.width = `${pctLeft}%`;
-    gbarLabel.textContent = `${pctLeft}%`;
-
-    dayLabel.textContent = state.day.id;
+    gFill.style.width = `${pctLeft}%`;
+    gLabel.textContent = `${pctLeft}%`;
 
     updateUndoRedo();
   }
@@ -1768,14 +1220,14 @@ Autre catégorie
   function renderFocus(){
     const t = getTask(state.focusId);
     if(!t){
-      focusText.textContent = "cible en cours de recherche";
+      focusTitle.textContent = "CIBLE EN COURS DE RECHERCHE";
       focusMeta.textContent = "—";
       focusEth.textContent = "0";
       focusPrio.textContent = "—";
       focusEnergy.textContent = "—";
 
-      tbarFill.style.width="100%";
-      tbarLabel.textContent="100%";
+      tFill.style.width = "100%";
+      tLabel.textContent = "100%";
 
       btnDego.disabled = true;
       btnNotes.disabled = true;
@@ -1784,9 +1236,10 @@ Autre catégorie
       return;
     }
 
-    focusText.textContent = t.title;
+    focusTitle.textContent = t.title;
     const hintMin = t.minutesHint ? ` · ${t.minutesHint} min` : "";
     focusMeta.textContent = `${t.category} · P${t.priority}${hintMin}`;
+
     focusEth.textContent = `${t.ethorionRemaining}/${t.ethorionTotal}`;
     focusPrio.textContent = String(t.priority);
     focusEnergy.textContent = (t.energyTag===1 ? "basse" : t.energyTag===2 ? "moyenne" : "haute");
@@ -1794,50 +1247,92 @@ Autre catégorie
     const total = Math.max(1, t.ethorionTotal||1);
     const rem = clamp(t.ethorionRemaining||0, 0, total);
     const pctLeft = clamp(Math.round((rem/total)*100), 0, 100);
-    tbarFill.style.width = `${pctLeft}%`;
-    tbarLabel.textContent = `${pctLeft}%`;
+    tFill.style.width = `${pctLeft}%`;
+    tLabel.textContent = `${pctLeft}%`;
 
     btnDego.disabled = false;
     btnNotes.disabled = false;
     btnDone.disabled = false;
   }
 
-  function renderTaskRow(t, {compact}={}){
+  function renderAll(){
+    renderCounters();
+    renderFocus();
+    renderDrawer(); // keep drawer content coherent with updates
+  }
+
+  // =========================
+  // Drawer Tabs + Content
+  // =========================
+  const TAB_DEFS = [
+    { key:"inbox",   label:"Inbox" },
+    { key:"liste",   label:"Liste" },
+    { key:"cats",    label:"Cat" },
+    { key:"sets",    label:"Sets" },
+    { key:"energie", label:"Énergie" },
+    { key:"hist",    label:"Hist" },
+    { key:"rapport", label:"Rapport" }
+  ];
+
+  function setTab(key){
+    state.ui.activeTab = key;
+    save();
+    renderDrawer();
+  }
+
+  function renderTabs(){
+    tabs.innerHTML = "";
+    TAB_DEFS.forEach(t=>{
+      const b = document.createElement("button");
+      b.className = "tab" + (state.ui.activeTab===t.key ? " active" : "");
+      b.textContent = t.label;
+      b.addEventListener("click", ()=> setTab(t.key));
+      tabs.appendChild(b);
+    });
+  }
+
+  function esc(s){
+    return String(s ?? "").replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[c]));
+  }
+
+  function miniBarPct(rem, total){
+    total = Math.max(1, total||1);
+    rem = clamp(rem||0, 0, total);
+    return clamp(Math.round((rem/total)*100), 0, 100);
+  }
+
+  function renderTaskRow(t, {draggable=false}={}){
     const row = document.createElement("div");
     row.className = "trow";
+    row.dataset.id = t.id;
 
-    const total = Math.max(1, t.ethorionTotal||1);
-    const rem = clamp(t.ethorionRemaining||0, 0, total);
-    const pctLeft = clamp(Math.round((rem/total)*100), 0, 100);
-
-    const smallBar = `
-      <div class="tbarWrap" aria-label="Progression">
-        <div class="tbarFill" style="width:${pctLeft}%"></div>
-        <div class="tbarLabel">${pctLeft}%</div>
-      </div>
-    `;
+    const pct = miniBarPct(t.ethorionRemaining, t.ethorionTotal);
 
     row.innerHTML = `
       <div class="trowTop">
         <div style="min-width:0;">
-          <div class="tname ${t.done ? "done":""}">${escapeHtml(t.title)}</div>
+          <div class="tname ${t.done ? "done":""}">${esc(t.title)}</div>
           <div class="tmini">
-            <span>${escapeHtml(t.category)}</span>
+            <span>${esc(t.category)}</span>
             <span>·</span>
-            <span>P${escapeHtml(String(t.priority))}</span>
+            <span>P${esc(String(t.priority))}</span>
             <span>·</span>
-            <span>ETHORION ${escapeHtml(String(rem))}/${escapeHtml(String(total))}</span>
+            <span>ETH ${esc(String(t.ethorionRemaining))}/${esc(String(t.ethorionTotal))}</span>
           </div>
         </div>
         <div class="tacts">
-          ${!t.done ? `<button class="ibtn" data-a="focus">Focus</button>` : ""}
-          ${!t.done ? `<button class="ibtn" data-a="eth">Eth</button>` : ""}
-          ${!t.done ? `<button class="ibtn" data-a="dup">Dupl</button>` : ""}
-          ${!t.done ? `<button class="ibtn" data-a="done">OK</button>` : ""}
-          <button class="ibtn" data-a="del">X</button>
+          ${!t.done ? `<button class="btn" data-a="focus">Focus</button>` : ""}
+          ${!t.done ? `<button class="btn" data-a="eth">Eth</button>` : ""}
+          ${!t.done ? `<button class="btn" data-a="dup">Dupl</button>` : ""}
+          ${!t.done ? `<button class="btn" data-a="ok">OK</button>` : ""}
+          <button class="btn" data-a="x">X</button>
         </div>
       </div>
-      ${compact ? "" : smallBar}
+      <div class="sbarMiniWrap" aria-label="Progression">
+        <div class="sbarMiniFill" style="width:${pct}%"></div>
+      </div>
     `;
 
     row.querySelectorAll("[data-a]").forEach(btn=>{
@@ -1846,82 +1341,526 @@ Autre catégorie
         if(a==="focus"){ setFocus(t.id); renderAll(); }
         if(a==="eth"){ setEthorion(t.id); }
         if(a==="dup"){ duplicateTask(t.id); }
-        if(a==="done"){ finishTask(t.id); }
-        if(a==="del"){ deleteTask(t.id); }
+        if(a==="ok"){ finishTask(t.id); }
+        if(a==="x"){ deleteTask(t.id); }
       });
     });
+
+    if(draggable && !t.done){
+      row.draggable = true;
+      row.style.cursor = "grab";
+    }
 
     return row;
   }
 
-  function renderLists(){
-    // Main
-    listMain.innerHTML = "";
-    getActiveTasksSorted().forEach(t=>{
-      listMain.appendChild(renderTaskRow(t, {compact:false}));
+  function renderDrawerInbox(){
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="cardTitle"><span>Inbox</span><span>Ctrl/⌘+Enter</span></div>
+      <textarea id="inboxTA" placeholder="Catégorie
+- Tâche – 3 ethorions – 15 minutes – importance 2
+- …"></textarea>
+      <div class="rowBtns">
+        <button class="btn" id="btnAdd">Ajouter</button>
+        <button class="btn" id="btnApplyConsult">Appliquer set Consult</button>
+      </div>
+    `;
+    const ta = card.querySelector("#inboxTA");
+    const add = card.querySelector("#btnAdd");
+    const applyConsult = card.querySelector("#btnApplyConsult");
+
+    add.addEventListener("click", ()=>{
+      addTasksFromText(ta.value);
+      ta.value = "";
     });
 
-    // Done (recent)
-    listDone.innerHTML = "";
+    applyConsult.addEventListener("click", ()=>{
+      const s = state.sets.find(x=>x.name.toLowerCase()==="consult") || state.sets[0];
+      if(s) addTasksFromText((s.lines||[]).join("\n"));
+    });
+
+    // shortcut for inbox
+    ta.addEventListener("keydown", (e)=>{
+      if((e.ctrlKey||e.metaKey) && e.key==="Enter"){
+        e.preventDefault();
+        add.click();
+      }
+    });
+
+    return card;
+  }
+
+  function renderDrawerList(){
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    wrap.innerHTML = `
+      <div class="cardTitle">
+        <span>Liste</span>
+        <span>
+          <select id="sortSel" aria-label="Tri">
+            <option value="order">Tri: ordre</option>
+            <option value="prio">Tri: priorité</option>
+            <option value="eth">Tri: ethorion</option>
+            <option value="cat">Tri: catégorie</option>
+          </select>
+        </span>
+      </div>
+      <div class="list" id="taskList"></div>
+      <details>
+        <summary>Terminé</summary>
+        <div class="inside">
+          <div class="list" id="doneList"></div>
+        </div>
+      </details>
+    `;
+
+    const sortSel = wrap.querySelector("#sortSel");
+    sortSel.value = state.ui.sort || "order";
+    sortSel.addEventListener("change", ()=>{
+      pushHistory("Tri");
+      state.ui.sort = sortSel.value;
+      save();
+      renderDrawer();
+    });
+
+    const list = wrap.querySelector("#taskList");
+    const items = getActiveSorted();
+
+    // Drag reorder only when "ordre" sorting
+    const draggable = (state.ui.sort==="order");
+
+    items.forEach(t=> list.appendChild(renderTaskRow(t, {draggable})));
+
+    // Drag-and-drop reorder
+    if(draggable){
+      let dragId = null;
+
+      list.addEventListener("dragstart", (e)=>{
+        const row = e.target.closest(".trow");
+        if(!row) return;
+        dragId = row.dataset.id;
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", dragId);
+      });
+
+      list.addEventListener("dragover", (e)=>{
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+      });
+
+      list.addEventListener("drop", (e)=>{
+        e.preventDefault();
+        const targetRow = e.target.closest(".trow");
+        if(!targetRow) return;
+
+        const fromId = e.dataTransfer.getData("text/plain") || dragId;
+        const toId = targetRow.dataset.id;
+        if(!fromId || !toId || fromId===toId) return;
+
+        const rows = [...list.querySelectorAll(".trow")];
+        const fromEl = rows.find(r=>r.dataset.id===fromId);
+        const toEl = rows.find(r=>r.dataset.id===toId);
+        if(!fromEl || !toEl) return;
+
+        pushHistory("Réordonner");
+
+        // insert
+        const rect = toEl.getBoundingClientRect();
+        const after = (e.clientY - rect.top) > rect.height/2;
+        if(after) toEl.after(fromEl);
+        else toEl.before(fromEl);
+
+        // apply new order to tasks
+        const ids = [...list.querySelectorAll(".trow")].map(r=>r.dataset.id);
+        applyOrderFromList(ids);
+
+        save();
+        renderDrawer();
+        showToast("Ordre mis à jour.", 2200);
+      });
+    }
+
+    // Done list
+    const doneList = wrap.querySelector("#doneList");
     state.tasks
       .filter(t=>t.done)
       .sort((a,b)=>(b.doneAt||0)-(a.doneAt||0))
       .slice(0, 40)
-      .forEach(t=>{
-        listDone.appendChild(renderTaskRow(t, {compact:true}));
+      .forEach(t=> doneList.appendChild(renderTaskRow(t)));
+
+    return wrap;
+  }
+
+  function groupByCategory(tasks){
+    const m = new Map();
+    tasks.forEach(t=>{
+      const k = t.category || "Sans catégorie";
+      if(!m.has(k)) m.set(k, []);
+      m.get(k).push(t);
+    });
+    const keys = [...m.keys()].sort((a,b)=>a.localeCompare(b, "fr"));
+    return {m, keys};
+  }
+
+  function renderDrawerCats(){
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    wrap.innerHTML = `<div class="cardTitle"><span>Catégories</span><span>clic pour ouvrir</span></div>`;
+
+    const items = getActiveSorted();
+    const {m, keys} = groupByCategory(items);
+
+    keys.forEach(cat=>{
+      const det = document.createElement("details");
+      det.open = false;
+      const sumEth = m.get(cat).reduce((a,t)=>a+(t.ethorionRemaining||0),0);
+      const sum = document.createElement("summary");
+      sum.textContent = `${cat} — ETH ${sumEth}`;
+      det.appendChild(sum);
+
+      const inside = document.createElement("div");
+      inside.className = "inside";
+      const list = document.createElement("div");
+      list.className = "list";
+      m.get(cat).forEach(t=> list.appendChild(renderTaskRow(t)));
+      inside.appendChild(list);
+      det.appendChild(inside);
+
+      wrap.appendChild(det);
+    });
+
+    return wrap;
+  }
+
+  function renderDrawerSets(){
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    wrap.innerHTML = `
+      <div class="cardTitle"><span>Sets</span><span>préenregistrés + perso</span></div>
+      <div class="list" id="setsList"></div>
+      <div class="rowBtns">
+        <button class="btn" id="btnNewSet">+ Set</button>
+      </div>
+    `;
+
+    const list = wrap.querySelector("#setsList");
+
+    state.sets.forEach(s=>{
+      const row = document.createElement("div");
+      row.className = "trow";
+      row.innerHTML = `
+        <div class="trowTop">
+          <div>
+            <div class="tname">${esc(s.name)}</div>
+            <div class="tmini">${esc(String((s.lines||[]).length))} lignes</div>
+          </div>
+          <div class="tacts">
+            <button class="btn" data-a="apply">Appliquer</button>
+            <button class="btn" data-a="edit">Éditer</button>
+            <button class="btn" data-a="del">X</button>
+          </div>
+        </div>
+      `;
+
+      row.querySelector('[data-a="apply"]').addEventListener("click", ()=>{
+        addTasksFromText((s.lines||[]).join("\n"));
+        showToast("Set appliqué.", 2400);
       });
+
+      row.querySelector('[data-a="edit"]').addEventListener("click", ()=>{
+        openSetEditor(s.id);
+      });
+
+      row.querySelector('[data-a="del"]').addEventListener("click", ()=>{
+        if(!confirm("Supprimer set ?")) return;
+        pushHistory("Supprimer set");
+        state.sets = state.sets.filter(x=>x.id!==s.id);
+        save();
+        renderDrawer();
+      });
+
+      list.appendChild(row);
+    });
+
+    wrap.querySelector("#btnNewSet").addEventListener("click", ()=> openSetEditor(null));
+    return wrap;
   }
 
-  function renderAll(){
-    // apply UI toggles
-    if(state.ui.railHidden) rail.classList.add("hidden"); else rail.classList.remove("hidden");
-    if(state.ui.panelHidden) side.classList.add("hidden"); else side.classList.remove("hidden");
+  function openSetEditor(setId){
+    const s = setId ? state.sets.find(x=>x.id===setId) : null;
 
-    renderGlobal();
-    renderFocus();
-    renderLists();
-    updateUndoRedo();
-  }
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="cardTitle"><span>${s ? "Éditer set" : "Nouveau set"}</span><span>lignes avec tiret = tâches</span></div>
+      <input type="text" id="setName" placeholder="Nom du set" value="${esc(s ? s.name : "")}">
+      <textarea id="setLines" placeholder="Catégorie
+- tâche
+- tâche">${esc(s ? (s.lines||[]).join("\n") : "")}</textarea>
+      <div class="rowBtns">
+        <button class="btn" id="btnSaveSet">Enregistrer</button>
+        <button class="btn" id="btnCancelSet">Annuler</button>
+      </div>
+    `;
 
-  // =========================
-  // Roulette suspense
-  // =========================
-  let rouletteLock = false;
+    const name = card.querySelector("#setName");
+    const lines = card.querySelector("#setLines");
+    const saveBtn = card.querySelector("#btnSaveSet");
+    const cancelBtn = card.querySelector("#btnCancelSet");
 
-  function roulette(){
-    if(rouletteLock) return;
-    rouletteLock = true;
+    saveBtn.addEventListener("click", ()=>{
+      const n = cleanLine(name.value).slice(0,40);
+      const ls = String(lines.value||"").split(/\r?\n/).map(cleanLine).filter(Boolean);
+      if(!n){ showToast("Nom ?", 2200); return; }
+      if(!ls.length){ showToast("Lignes ?", 2200); return; }
 
-    btnRoulette.classList.add("spinning");
-    btnRoulette.disabled = true;
+      pushHistory("Enregistrer set");
 
-    // short suspense: 650–950ms
-    const suspense = 650 + Math.floor(Math.random()*300);
-    const start = now();
-
-    // micro-text tease in toast
-    showToast("scan… scan…", 1400);
-
-    setTimeout(()=>{
-      const t = pickWeightedTask();
-      if(t){
-        setFocus(t.id);
-        showToast("cible verrouillée.", 2400);
-        confetti(1.1);
-        flash();
+      if(s){
+        s.name = n;
+        s.lines = ls;
       }else{
-        state.focusId = null;
-        showToast("plus de cibles.", 2400);
+        state.sets.push({ id:"set_"+uid(), name:n, lines: ls });
       }
+      save();
+      renderDrawer();
+      showToast("OK", 2000);
+    });
 
-      btnRoulette.classList.remove("spinning");
-      btnRoulette.disabled = false;
-      rouletteLock = false;
+    cancelBtn.addEventListener("click", ()=> renderDrawer());
+    drawerBody.innerHTML = "";
+    drawerBody.appendChild(card);
+  }
+
+  function renderDrawerEnergy(){
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    wrap.innerHTML = `
+      <div class="cardTitle"><span>Énergie</span><span>influence roulette</span></div>
+      <select id="lvl">
+        <option value="1">Énergie: basse</option>
+        <option value="2">Énergie: moyenne</option>
+        <option value="3">Énergie: haute</option>
+      </select>
+      <select id="mot">
+        <option value="1">Motivation: basse</option>
+        <option value="2">Motivation: moyenne</option>
+        <option value="3">Motivation: haute</option>
+      </select>
+      <div class="rowBtns">
+        <button class="btn" id="btnApply">Appliquer</button>
+      </div>
+    `;
+
+    const lvl = wrap.querySelector("#lvl");
+    const mot = wrap.querySelector("#mot");
+    lvl.value = String(state.energyProfile.level||2);
+    mot.value = String(state.energyProfile.motivation||2);
+
+    wrap.querySelector("#btnApply").addEventListener("click", ()=>{
+      pushHistory("Énergie réglée");
+      state.energyProfile.level = parseInt(lvl.value,10);
+      state.energyProfile.motivation = parseInt(mot.value,10);
       save();
       renderAll();
+      showToast("OK", 2200);
+    });
 
-    }, suspense);
+    return wrap;
   }
+
+  function renderDrawerHist(){
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    wrap.innerHTML = `<div class="cardTitle"><span>Historique</span><span>visible</span></div>`;
+
+    const list = document.createElement("div");
+    list.className = "list";
+
+    state.events.slice().reverse().slice(0, 120).forEach(ev=>{
+      const row = document.createElement("div");
+      row.className = "trow";
+      const d = new Date(ev.t);
+      const ts = `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+      row.innerHTML = `<div class="tmini"><b>${esc(ts)}</b> · ${esc(ev.text)}</div>`;
+      list.appendChild(row);
+    });
+
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  function renderDrawerRapport(){
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    wrap.innerHTML = `<div class="cardTitle"><span>Rapport</span><span>jour</span></div>`;
+
+    const active = state.tasks.filter(t=>!t.done);
+    const done = state.tasks.filter(t=>t.done);
+
+    const leftTasks = active.length;
+    const leftEth = active.reduce((a,t)=>a+(t.ethorionRemaining||0),0);
+
+    const startT = state.day.startTasks || 0;
+    const startE = state.day.startEth || 0;
+    const doneTasks = done.length;
+    const elimEth = Math.max(0, startE - leftEth);
+
+    const box = document.createElement("div");
+    box.className = "trow";
+    box.innerHTML = `
+      <div class="tname">Aujourd’hui</div>
+      <div class="tmini">Départ: ${esc(String(startT))} tâches · ${esc(String(startE))} ETH</div>
+      <div class="tmini">Reste: ${esc(String(leftTasks))} tâches · ${esc(String(leftEth))} ETH</div>
+      <div class="tmini">Éliminé: ${esc(String(elimEth))} ETH · Terminé: ${esc(String(doneTasks))} tâches</div>
+    `;
+
+    wrap.appendChild(box);
+
+    // by category
+    const byCat = {};
+    state.tasks.forEach(t=>{
+      const c = t.category || "Sans catégorie";
+      if(!byCat[c]) byCat[c] = { n:0, total:0, left:0 };
+      byCat[c].n++;
+      byCat[c].total += (t.ethorionTotal||0);
+      byCat[c].left += (t.done?0:(t.ethorionRemaining||0));
+    });
+
+    const list = document.createElement("div");
+    list.className = "list";
+    Object.keys(byCat).sort((a,b)=>a.localeCompare(b,"fr")).forEach(c=>{
+      const r = byCat[c];
+      const row = document.createElement("div");
+      row.className = "trow";
+      row.innerHTML = `
+        <div class="tname">${esc(c)}</div>
+        <div class="tmini">${esc(String(r.n))} tâches · ETH ${esc(String(r.left))}/${esc(String(r.total))}</div>
+      `;
+      list.appendChild(row);
+    });
+
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  function renderDrawer(){
+    renderTabs();
+    drawerBody.innerHTML = "";
+
+    const tab = state.ui.activeTab || "inbox";
+    if(tab==="inbox") drawerBody.appendChild(renderDrawerInbox());
+    else if(tab==="liste") drawerBody.appendChild(renderDrawerList());
+    else if(tab==="cats") drawerBody.appendChild(renderDrawerCats());
+    else if(tab==="sets") drawerBody.appendChild(renderDrawerSets());
+    else if(tab==="energie") drawerBody.appendChild(renderDrawerEnergy());
+    else if(tab==="hist") drawerBody.appendChild(renderDrawerHist());
+    else if(tab==="rapport") drawerBody.appendChild(renderDrawerRapport());
+    else drawerBody.appendChild(renderDrawerInbox());
+  }
+
+  // =========================
+  // Notes
+  // =========================
+  function openNotes(){
+    const t = getTask(state.focusId);
+    if(!t){
+      showToast("AUCUNE CIBLE.", 2200);
+      return;
+    }
+
+    // quick modal inside drawer (reuse drawer UI)
+    openDrawer();
+    setTab("inbox"); // just to keep tabs consistent (but we'll override body)
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="cardTitle"><span>Notes</span><span>cible</span></div>
+      <textarea id="notesTA" placeholder="Notes">${esc(t.notes||"")}</textarea>
+      <div class="rowBtns">
+        <button class="btn" id="btnSaveNotes">Enregistrer</button>
+      </div>
+    `;
+    const ta = card.querySelector("#notesTA");
+    card.querySelector("#btnSaveNotes").addEventListener("click", ()=>{
+      pushHistory("Note enregistrée");
+      t.notes = ta.value.slice(0, 12000);
+      save();
+      renderAll();
+      showToast("Note ok.", 2200);
+    });
+
+    drawerBody.innerHTML = "";
+    drawerBody.appendChild(card);
+  }
+
+  // =========================
+  // Drawer open/close
+  // =========================
+  function openDrawer(){
+    overlay.classList.add("show");
+    drawer.classList.add("show");
+    // ensure content fresh
+    renderDrawer();
+  }
+  function closeDrawer(){
+    overlay.classList.remove("show");
+    drawer.classList.remove("show");
+  }
+
+  btnMenu.addEventListener("click", openDrawer);
+  btnClose.addEventListener("click", closeDrawer);
+  overlay.addEventListener("click", closeDrawer);
+
+  // =========================
+  // Buttons wiring
+  // =========================
+  btnNewDay.addEventListener("click", newDay);
+  btnRoulette.addEventListener("click", roulette);
+  btnDego.addEventListener("click", degoOne);
+  btnNotes.addEventListener("click", openNotes);
+  btnDone.addEventListener("click", ()=>{
+    const t = getTask(state.focusId);
+    if(t) finishTask(t.id);
+  });
+  btnSkip.addEventListener("click", skip);
+
+  btnUndo.addEventListener("click", undo);
+  btnRedo.addEventListener("click", redo);
+
+  // Keyboard
+  window.addEventListener("keydown", (e)=>{
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+    const inField = (tag==="textarea" || tag==="input" || tag==="select");
+
+    // global esc closes drawer
+    if(e.key==="Escape"){
+      closeDrawer();
+      return;
+    }
+
+    if(inField) return;
+
+    if(e.key.toLowerCase()==="r"){ e.preventDefault(); roulette(); return; }
+    if(e.key.toLowerCase()==="d"){ e.preventDefault(); degoOne(); return; }
+
+    // undo/redo
+    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z" && !e.shiftKey){
+      e.preventDefault(); undo(); return;
+    }
+    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z" && e.shiftKey){
+      e.preventDefault(); redo(); return;
+    }
+
+    // menu
+    if(e.key.toLowerCase()==="m"){
+      e.preventDefault();
+      openDrawer();
+      return;
+    }
+  });
 
   // =========================
   // Toast + FX
@@ -1943,8 +1882,8 @@ Autre catégorie
 
   function confetti(strength=1){
     const W = window.innerWidth, H = window.innerHeight;
-    const cx = W/2, cy = H*0.66;
-    const n = Math.floor(70*strength);
+    const cx = W/2, cy = H*0.64;
+    const n = Math.floor(75*strength);
     const parts = [];
     for(let i=0;i<n;i++){
       const a = -Math.PI/2 + (Math.random()-0.5)*1.7;
@@ -1977,7 +1916,7 @@ Autre catégorie
     div.style.inset="0";
     div.style.background="rgba(242,242,242,0.08)";
     div.style.pointerEvents="none";
-    div.style.zIndex="86";
+    div.style.zIndex="115";
     div.style.opacity="0";
     div.style.transition="opacity 120ms ease";
     document.body.appendChild(div);
@@ -1987,117 +1926,19 @@ Autre catégorie
   }
 
   const LINES = [
-    "ETHORION dégommé.",
-    "Charge réduite.",
-    "Net.",
-    "Encore.",
-    "Coup net."
+    "ETHORION DÉGOMMÉ.",
+    "CHARGE RÉDUITE.",
+    "COUP NET.",
+    "ENCORE.",
+    "PROPRE."
   ];
   const DONE_LINES = [
-    "Cible exterminée.",
-    "Mission finie.",
-    "Élimination confirmée.",
-    "Terminé."
-  ];
+    "CIBLE EXTERMINÉE.",
+    "TERMINÉ.",
+    "ÉLIMINATION CONFIRMÉE.",
+    "MISSION FINIE."
+  ]
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-  // =========================
-  // Wiring (desktop + mobile)
-  // =========================
-  // Add (desktop panel)
-  btnAdd.addEventListener("click", ()=>{
-    addTasksFromText(taInbox.value);
-    taInbox.value = "";
-  });
-
-  // Sort
-  selSort.value = state.ui.sort || "order";
-  selSort.addEventListener("change", ()=>{
-    pushHistory("Tri");
-    state.ui.sort = selSort.value;
-    save();
-    renderAll();
-  });
-
-  // Toggle rail/panel
-  btnToggleRail.addEventListener("click", ()=>{
-    pushHistory("Toggle menu");
-    state.ui.railHidden = !state.ui.railHidden;
-    save();
-    renderAll();
-  });
-
-  btnTogglePanel.addEventListener("click", ()=>{
-    pushHistory("Toggle panneau");
-    state.ui.panelHidden = !state.ui.panelHidden;
-    save();
-    renderAll();
-  });
-
-  btnNewDay.addEventListener("click", newDay);
-
-  // Focus buttons
-  btnRoulette.addEventListener("click", roulette);
-  btnDego.addEventListener("click", degoOneEthorion);
-  btnNotes.addEventListener("click", openNotesDrawer);
-  btnDone.addEventListener("click", ()=>{
-    const t = getTask(state.focusId);
-    if(t) finishTask(t.id);
-  });
-  btnSkip.addEventListener("click", skipTask);
-
-  // Desktop nav
-  navInbox.addEventListener("click", openInboxDrawer);
-  navList.addEventListener("click", openListDrawer);
-  navCats.addEventListener("click", openCategoriesDrawer);
-  navSets.addEventListener("click", openSetsDrawer);
-  navEnergy.addEventListener("click", openEnergyDrawer);
-  navHistory.addEventListener("click", openHistoryDrawer);
-  navReport.addEventListener("click", openReportDrawer);
-  navUndo.addEventListener("click", undo);
-  navRedo.addEventListener("click", redo);
-
-  // Mobile buttons
-  mInbox.addEventListener("click", openInboxDrawer);
-  mList.addEventListener("click", openListDrawer);
-  mRoulette.addEventListener("click", roulette);
-  mDego.addEventListener("click", degoOneEthorion);
-
-  // Drawer close
-  overlay.addEventListener("click", closeDrawer);
-  drawerClose.addEventListener("click", closeDrawer);
-
-  // Categories view (desktop)
-  btnOpenCats.addEventListener("click", openCategoriesDrawer);
-
-  // Keyboard
-  window.addEventListener("keydown", (e)=>{
-    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
-    const inField = (tag==="textarea" || tag==="input" || tag==="select");
-
-    // Add: Ctrl/⌘+Enter (only for taInbox)
-    if(inField && tag==="textarea" && (e.ctrlKey||e.metaKey) && e.key==="Enter"){
-      if(e.target === taInbox){
-        e.preventDefault();
-        btnAdd.click();
-      }
-      return;
-    }
-
-    // Undo/Redo
-    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z" && !e.shiftKey){
-      e.preventDefault(); undo(); return;
-    }
-    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z" && e.shiftKey){
-      e.preventDefault(); redo(); return;
-    }
-
-    if(inField) return;
-
-    if(e.key.toLowerCase()==="r"){ e.preventDefault(); roulette(); return; }
-    if(e.key.toLowerCase()==="d"){ e.preventDefault(); degoOneEthorion(); return; }
-    if(e.key==="Escape"){ e.preventDefault(); closeDrawer(); return; }
-  });
 
   // =========================
   // Init
@@ -2105,19 +1946,16 @@ Autre catégorie
   function init(){
     ensureDay();
 
-    // If focus missing, choose one
+    // ensure focus exists
     if(state.focusId && !getTask(state.focusId)) state.focusId = null;
     if(!state.focusId){
       const t = pickWeightedTask();
       state.focusId = t ? t.id : null;
     }
 
-    // UI toggles apply
-    if(state.ui.sort) selSort.value = state.ui.sort;
-
     save();
     renderAll();
-    showToast("prêt.", 2000);
+    showToast("PRÊT.", 2000);
   }
 
   init();
@@ -2125,4 +1963,4 @@ Autre catégorie
 })();
 </script>
 </body>
-</html>
+</html
