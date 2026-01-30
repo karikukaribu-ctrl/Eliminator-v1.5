@@ -1,2 +1,2 @@
-# Eliminator-v1.5
+# ELIMINATOR-v1.5
 Créé pour détruire 
